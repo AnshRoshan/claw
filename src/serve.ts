@@ -333,7 +333,7 @@ export function makeServeServer(deps: ServeDeps): http.Server {
       const dir = new URL(url, "http://x").searchParams.get("path") || ".";
       try {
         const abs = confine(world.workspace, dir);
-        const entries = fs.readdirSync(abs, { withFileTypes: true }).filter((e) => !e.name.startsWith("."));
+        const entries = fs.readdirSync(abs, { withFileTypes: true }).filter((e) => !e.name.startsWith(".") && e.name !== "node_modules");
         entries.sort((a, b) => Number(b.isDirectory()) - Number(a.isDirectory()) || a.name.localeCompare(b.name));
         json(res, 200, {
           path: dir,
@@ -546,6 +546,26 @@ export function makeServeServer(deps: ServeDeps): http.Server {
           provider: next.name,
           model: next.model,
         });
+      } catch (err) {
+        json(res, 400, { error: (err as Error).message });
+      }
+      return;
+    }
+    if (req.method === "GET" && url?.startsWith("/file")) {
+      // Read ONE workspace file for the Files page preview (confined, capped).
+      const rel = new URL(url, "http://x").searchParams.get("path") || "";
+      try {
+        if (!rel) throw new Error("missing ?path");
+        const abs = confine(world.workspace, rel);
+        const stat = fs.statSync(abs, { throwIfNoEntry: false });
+        if (!stat?.isFile()) throw new Error(`no such file: ${rel}`);
+        const buf = fs.readFileSync(abs);
+        if (buf.subarray(0, 8192).includes(0)) {
+          json(res, 200, { path: rel, binary: true, size: stat.size });
+          return;
+        }
+        const text = buf.toString("utf8");
+        json(res, 200, { path: rel, size: stat.size, truncated: text.length > 200_000, content: text.slice(0, 200_000) });
       } catch (err) {
         json(res, 400, { error: (err as Error).message });
       }

@@ -99,9 +99,7 @@ input, textarea, select { font: inherit; color: inherit; }
 .tb-btn svg { width: 14px; height: 14px; }
 
 /* ══════════════════════════ body grid ══════════════════════════ */
-.work { display: grid; grid-template-columns: 44px var(--panel-w, 264px) 1fr; min-height: 0; }
-.work.no-panel { grid-template-columns: 44px 1fr; } /* panel is display:none → only 2 items flow */
-.work.no-panel .panel { display: none; }
+.work { display: grid; grid-template-columns: 44px 1fr; min-height: 0; }
 
 /* activity rail */
 .rail { border-right: 1px solid var(--hairline); background: var(--surface); display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 4px; }
@@ -112,41 +110,6 @@ input, textarea, select { font: inherit; color: inherit; }
 .rail button:hover { color: var(--fg); background: var(--surface-2); }
 .rail button.on { color: var(--fg); background: var(--surface-3); }
 .rail button svg { width: 17px; height: 17px; }
-
-/* panel */
-.panel { border-right: 1px solid var(--hairline); background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
-.panel-head { padding: 12px 14px 8px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); }
-.panel-body { flex: 1; overflow-y: auto; padding: 0 8px 12px; }
-.panel-foot { border-top: 1px solid var(--hairline); padding: 9px 14px; font-size: 11px; color: var(--fg-faint); overflow-wrap: anywhere; }
-
-/* panel: sessions */
-.s-row { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background var(--dur-hover) var(--ease); }
-.s-row:hover { background: var(--surface-2); }
-.s-row.on { background: var(--surface-3); }
-.s-row .sid { font: 11.5px var(--mono); color: var(--fg-dim); }
-.s-row.on .sid { color: var(--fg); }
-.s-row .smeta { font-size: 11px; color: var(--fg-faint); }
-.panel-empty { color: var(--fg-faint); font-size: 12px; padding: 10px 12px; }
-
-/* panel: files */
-.f-row { display: flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 7px; cursor: pointer; font: 12.5px var(--mono); color: var(--fg-dim); transition: background var(--dur-hover) var(--ease); }
-.f-row:hover { background: var(--surface-2); color: var(--fg); }
-.f-row .fi { flex: none; width: 15px; text-align: center; color: var(--fg-faint); font-size: 11px; }
-.f-row .crumb { color: var(--accent); cursor: pointer; }
-.f-crumbbar { padding: 4px 10px 8px; font: 11px var(--mono); color: var(--fg-faint); }
-
-/* panel: generic list items (skills / mcp) */
-.li-row { display: flex; align-items: baseline; gap: 8px; padding: 7px 10px; border-radius: 8px; cursor: pointer; transition: background var(--dur-hover) var(--ease); }
-.li-row:hover { background: var(--surface-2); }
-.li-row .nm { font: 12.5px var(--mono); }
-.li-row .ds { font-size: 11px; color: var(--fg-faint); flex: 1; text-align: right; }
-.tag { font: 10px var(--mono); color: var(--fg-faint); border: 1px solid var(--hairline); border-radius: 5px; padding: 1px 6px; }
-.kv { display: grid; grid-template-columns: 96px 1fr; gap: 6px 10px; padding: 4px 10px; font-size: 12px; }
-.kv .k { color: var(--fg-faint); }
-.kv .v { color: var(--fg-dim); overflow-wrap: anywhere; }
-.kv .v.mono { font: 11.5px var(--mono); }
-.pillset { display: flex; flex-wrap: wrap; gap: 5px; padding: 4px 10px 10px; }
-.pillset .tag { font-size: 11px; }
 
 /* ══════════════════════════ center ══════════════════════════ */
 .center { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
@@ -510,15 +473,6 @@ textarea.code:focus { border-color: rgba(48, 211, 88, .4); }
 }
 @media (max-width: 720px) {
   body { grid-template-columns: 1fr; }
-  .work { grid-template-columns: 44px 1fr !important; }
-  .work.no-panel { grid-template-columns: 44px 1fr !important; }
-  /* the panel becomes an overlay drawer instead of a column */
-  .panel {
-    position: fixed; left: 44px; top: 48px; bottom: 30px; width: min(300px, calc(100vw - 44px));
-    z-index: 40; box-shadow: 12px 0 32px rgba(0,0,0,.45); display: none;
-  }
-  .work.panel-open .panel { display: flex; }
-  .work.no-panel .panel { display: none; }
   .stream-inner { padding: 18px 14px 10px; }
   .composer-zone { padding: 8px 12px 12px; }
   .msg .body { padding-left: 0; }
@@ -633,12 +587,6 @@ textarea.code:focus { border-color: rgba(48, 211, 88, .4); }
     <button id="navAudit" title="Audit — operator console log">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke-linecap="round"/></svg>
     </button>
-  </div>
-
-  <div class="panel" id="panel">
-    <div class="panel-head" id="panelTitle">SESSIONS</div>
-    <div class="panel-body" id="panelBody"></div>
-    <div class="panel-foot" id="panelFoot"></div>
   </div>
 
   <div class="center" id="center">
@@ -1146,205 +1094,16 @@ $("consoleToggle").addEventListener("click", () => {
   $("consoleToggle").textContent = c.classList.contains("hidden") ? "▴ console" : "▾ console";
 });
 
-/* ── panels ────────────────────────────────────────────────── */
-function togglePanel(name) {
-  const opening = activePanel !== name;
-  if (opening) {
-    setPanel(name);
-    $("work").classList.remove("no-panel");
-    $("work").classList.toggle("panel-open", window.innerWidth <= 720);
-  } else {
-    activePanel = null;
-    document.querySelectorAll(".rail button, #navSettings").forEach((b) => b.classList.remove("on"));
-    $("work").classList.add("no-panel");
-    $("work").classList.remove("panel-open");
-  }
-}
-$("navFiles").addEventListener("click", () => togglePanel("files"));
-$("navSkills").addEventListener("click", () => togglePanel("skills"));
-$("navMcp").addEventListener("click", () => togglePanel("mcp"));
-$("navSettings").addEventListener("click", () => togglePanel("settings"));
-
-const panelBody = $("panelBody"), panelTitle = $("panelTitle"), panelFoot = $("panelFoot");
-const PANELS = ["sessions", "files", "skills", "mcp", "settings"];
-let activePanel = "sessions";
+/* ── workspace files (shared helpers for the Files page + @ mentions) ── */
 let cwd = ".";
-
-function setPanel(name) {
-  activePanel = name;
-  ["Sessions", "Files", "Skills", "Mcp", "Settings"].forEach((_, i) => {
-    const b = $("nav" + ["Sessions", "Files", "Skills", "Mcp", "Settings"][i]);
-    b.classList.toggle("on", PANELS[i] === name);
-  });
-  if (name === "sessions") renderSessions();
-  if (name === "files") renderFiles();
-  if (name === "skills") renderSkills();
-  if (name === "mcp") renderMcp();
-  if (name === "settings") renderSettings();
-  if (name === "sessions") renderSessions();
-}
-$("navSessions").addEventListener("click", () => togglePanel("sessions"));
-
-function renderSessions() {
-  panelTitle.textContent = "SESSIONS";
-  panelFoot.textContent = "click a session to replay its trajectory";
-  panelBody.replaceChildren();
-  const search = document.createElement("input");
-  search.type = "text";
-  search.placeholder = "Search all sessions…";
-  search.style.cssText = "width:100%;background:var(--surface-2);border:1px solid var(--hairline-strong);border-radius:8px;padding:7px 10px;font:12px var(--font);color:var(--fg);outline:none;margin:0 0 8px";
-  panelBody.appendChild(search);
-  const listBox = document.createElement("div");
-  panelBody.appendChild(listBox);
-
-  let debounce;
-  const load = async (q) => {
-    try {
-      const j = q
-        ? await fetch("/search?q=" + encodeURIComponent(q)).then((r) => r.json())
-        : await fetch("/sessions").then((r) => r.json());
-      listBox.replaceChildren();
-      const rows = q ? (j.results || []) : (j.sessions || []);
-      if (!rows.length) {
-        listBox.innerHTML = '<div class="panel-empty">' + (q ? "No sessions match." : "No sessions yet. Send a message to start one.") + "</div>";
-        return;
-      }
-      for (const s of rows) {
-        const el = document.createElement("div");
-        el.className = "s-row" + (s.id === sessionId ? " on" : "");
-        el.innerHTML = '<span class="sid">' + esc(s.title || s.id) + '</span><span class="smeta">' +
-          (s.snippet ? esc(s.snippet) : s.turns + " turns · " + new Date(s.createdAt).toLocaleString()) + "</span>";
-        el.addEventListener("click", () => openSession(s.id));
-        listBox.appendChild(el);
-      }
-    } catch { listBox.innerHTML = '<div class="panel-empty">offline</div>'; }
-  };
-  load("");
-  search.addEventListener("input", () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => load(search.value.trim()), 250);
-  });
-}
-
-async function renderFiles() {
-  panelTitle.textContent = "WORKSPACE";
-  panelFoot.textContent = "click a file to @-reference it";
-  panelBody.innerHTML = '<div class="panel-empty">…</div>';
-  const j = await fetch("/files?path=" + encodeURIComponent(cwd)).then((r) => r.json()).catch(() => ({ entries: [] }));
-  panelBody.replaceChildren();
-  const crumbs = document.createElement("div");
-  crumbs.className = "f-crumbbar";
-  crumbs.textContent = cwd === "." ? "workspace root" : cwd;
-  panelBody.appendChild(crumbs);
-  if (cwd !== ".") {
-    const up = document.createElement("div");
-    up.className = "f-row";
-    up.innerHTML = '<span class="fi">↩</span>..';
-    up.addEventListener("click", () => { cwd = cwd.split("/").slice(0, -1).join("/") || "."; renderFiles(); });
-    panelBody.appendChild(up);
-  }
-  for (const e of j.entries || []) {
-    const el = document.createElement("div");
-    el.className = "f-row";
-    el.innerHTML = '<span class="fi">' + (e.dir ? "▸" : "·") + "</span>" + esc(e.name);
-    const rel = cwd === "." ? e.name : cwd + "/" + e.name;
-    if (e.dir) el.addEventListener("click", () => { cwd = rel; renderFiles(); });
-    else el.addEventListener("click", () => insertAt(rel));
-    panelBody.appendChild(el);
-  }
-}
-
-async function renderSkills() {
-  panelTitle.textContent = "SKILLS & COMMANDS";
-  panelFoot.textContent = "click to insert into the composer";
-  const j = await fetch("/skills").then((r) => r.json()).catch(() => ({ commands: [] }));
-  panelBody.replaceChildren();
-  if (j.instructions) {
-    const ins = document.createElement("div");
-    ins.className = "kv";
-    ins.innerHTML = '<span class="k">instructions</span><span class="v mono">' + esc(j.instructions) + " loaded</span>";
-    panelBody.appendChild(ins);
-  }
-  if (!(j.commands || []).length) {
-    const e = document.createElement("div");
-    e.className = "panel-empty";
-    e.innerHTML = 'No commands yet.<br><br>Add <span style="font-family:var(--mono)">.claw/commands/&lt;name&gt;.md</span> to the workspace and it becomes a <span style="font-family:var(--mono)">/&lt;name&gt;</span> command with <span style="font-family:var(--mono)">$ARGUMENTS</span>.';
-    panelBody.appendChild(e);
-    return;
-  }
-  for (const c of j.commands) {
-    const el = document.createElement("div");
-    el.className = "li-row";
-    el.innerHTML = '<span class="nm">/' + esc(c.name) + '</span><span class="ds">' + esc(c.source) + "</span>";
-    el.addEventListener("click", () => { input.value = "/" + c.name + " "; input.focus(); autoGrow(); });
-    panelBody.appendChild(el);
-  }
-}
-
-async function renderMcp() {
-  panelTitle.textContent = "MCP SERVERS";
-  panelFoot.textContent = "configure: claw mcp add <name> …";
-  const j = await fetch("/status").then((r) => r.json()).catch(() => ({ mcp: [] }));
-  panelBody.replaceChildren();
-  if (!(j.mcp || []).length) {
-    const e = document.createElement("div");
-    e.className = "panel-empty";
-    e.innerHTML = 'No MCP servers connected.<br><br><span style="font-family:var(--mono)">claw mcp add firecrawl npx -y firecrawl-mcp-server</span>';
-    panelBody.appendChild(e);
-    return;
-  }
-  for (const srv of j.mcp) {
-    const head = document.createElement("div");
-    head.style.cssText = "padding:8px 10px 2px;font:600 12px var(--font)";
-    head.textContent = srv.name;
-    const t = document.createElement("span");
-    t.className = "tag";
-    t.textContent = srv.transport;
-    head.appendChild(t);
-    panelBody.appendChild(head);
-    for (const tool of srv.tools) {
-      const el = document.createElement("div");
-      el.className = "li-row";
-      el.innerHTML = '<span class="nm" style="font-size:11.5px">' + esc(tool) + "</span>";
-      panelBody.appendChild(el);
-    }
-  }
-}
-
-async function renderSettings() {
-  panelTitle.textContent = "SETTINGS";
-  panelFoot.textContent = "";
-  const j = await fetch("/settings").then((r) => r.json()).catch(() => null);
-  panelBody.replaceChildren();
-  if (!j) { panelBody.innerHTML = '<div class="panel-empty">offline</div>'; return; }
-  const kv = (rows) => {
-    const el = document.createElement("div");
-    el.className = "kv";
-    el.innerHTML = rows.map(([k, v, mono]) => '<span class="k">' + k + '</span><span class="v' + (mono ? " mono" : "") + '">' + v + "</span>").join("");
-    return el;
-  };
-  panelBody.appendChild(kv([
-    ["model", esc(j.model), true],
-    ["provider", esc(j.provider), true],
-    ["workspace", esc(j.workspace), true],
-    ["endpoint", esc(j.baseURL), true],
-  ]));
-  const secTitle = (t) => { const el = document.createElement("div"); el.style.cssText = "padding:12px 10px 2px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint)"; el.textContent = t; return el; };
-  panelBody.appendChild(secTitle("shell allowlist"));
-  const pills = document.createElement("div");
-  pills.className = "pillset";
-  pills.innerHTML = (j.allowlist || []).map((a) => '<span class="tag">' + esc(a) + "</span>").join("") || '<span class="tag">none</span>';
-  panelBody.appendChild(pills);
-  panelBody.appendChild(secTitle("risky tools (human gate)"));
-  const pills2 = document.createElement("div");
-  pills2.className = "pillset";
-  pills2.innerHTML = (j.riskyTools || []).map((a) => '<span class="tag">' + esc(a) + "</span>").join("") || '<span class="tag">none</span>';
-  panelBody.appendChild(pills2);
-  panelBody.appendChild(secTitle("hooks"));
-  const hk = document.createElement("div");
-  hk.className = "kv";
-  hk.innerHTML = Object.entries(j.hooks || {}).map(([k, v]) => '<span class="k">' + esc(k) + '</span><span class="v" style="color:' + (v ? "var(--accent)" : "var(--fg-faint)") + '">' + (v ? "configured" : ", ") + "</span>").join("");
-  panelBody.appendChild(hk);
+function insertAt(rel) {
+  const pos = input.selectionStart ?? input.value.length;
+  const before = input.value.slice(0, pos);
+  const needSpace = before && !/\s$/.test(before) ? " " : "";
+  input.value = before + needSpace + "@" + rel + " " + input.value.slice(pos);
+  input.focus();
+  autoGrow();
+  syncSendState();
 }
 
 /* ── mode segmented control ────────────────────────────────── */
@@ -1698,10 +1457,12 @@ async function switchWorkspace(dir) {
     cwd = ".";
     newSession();
     logLine("done", "workspace switched to " + j.workspace + " (model: " + j.model + ")");
-    if (!$("work").classList.contains("no-panel") && activePanel === "files") renderFiles();
+    if (typeof currentPage !== "undefined" && currentPage === "files") renderPage();
   } catch (e) { $("wsErr").textContent = e.message; }
 }
 $("wsCancel").addEventListener("click", () => $("wsModal").classList.remove("open"));
+$("wsModal").addEventListener("mousedown", (e) => { if (e.target === $("wsModal")) $("wsModal").classList.remove("open"); });
+window.addEventListener("keydown", (e) => { if (e.key === "Escape") $("wsModal").classList.remove("open"); });
 $("wsOpen").addEventListener("click", () => switchWorkspace($("wsPath").value.trim()));
 
 /* ── onboarding (connect a real provider) ──────────────────── */
@@ -1786,8 +1547,8 @@ $("connectBtn").addEventListener("click", async () => {
    OPERATOR CONSOLE — pages, command palette, toasts, audit log,
    live approvals. Rail = primary nav; the chat is the Run page.
    ════════════════════════════════════════════════════════════ */
-const PAGE_TITLES = { overview: "Overview", run: "Run", sessions: "Sessions", models: "Models", mcp: "MCP", memory: "Memory", skills: "Skills", audit: "Audit", settings: "Settings" };
-const RAIL_PAGES = { navOverview: "overview", navRun: "run", navSessions: "sessions", navModels: "models", navMcp: "mcp", navMemory: "memory", navSkills: "skills", navAudit: "audit" };
+const PAGE_TITLES = { overview: "Overview", run: "Run", sessions: "Sessions", files: "Files", models: "Models", mcp: "MCP", memory: "Memory", skills: "Skills", audit: "Audit", settings: "Settings" };
+const RAIL_PAGES = { navOverview: "overview", navRun: "run", navSessions: "sessions", navFiles: "files", navModels: "models", navMcp: "mcp", navMemory: "memory", navSkills: "skills", navAudit: "audit" };
 let currentPage = "run";
 let lastPrompt = "";
 const turnDurations = [];
@@ -1871,24 +1632,17 @@ function openPage(name) {
   location.hash = "#/" + name;
   $("center").classList.toggle("page-mode", name !== "run");
   document.querySelectorAll(".rail button").forEach((b) => b.classList.toggle("on", RAIL_PAGES[b.id] === name));
+  $("navSettings").classList.toggle("on", name === "settings");
   renderPage();
 }
+/* Rail = one navigation system. Every button opens exactly one page. */
 document.querySelector(".rail").addEventListener("click", (e) => {
   const b = e.target.closest("button");
   if (!b) return;
-  if (b.id === "navFiles") {
-    e.stopPropagation();
-    openPage("run");
-    togglePanel("files");
-    return;
-  }
   const page = RAIL_PAGES[b.id];
-  if (page) {
-    e.stopPropagation();
-    if (page === "sessions" && b.classList.contains("on") && currentPage === "run") { openPage("run"); return; }
-    openPage(page);
-  }
-}, true);
+  if (page) openPage(page);
+});
+$("navSettings").addEventListener("click", () => openPage("settings"));
 
 async function renderPage() {
   const host = $("pageView");
@@ -2123,6 +1877,69 @@ PAGES.audit = async (host) => {
   $("audClear").addEventListener("click", () => { localStorage.removeItem(AUDIT_KEY); renderPage(); });
 };
 
+/* ── Files (workspace browser with preview) ── */
+let fileDir = ".";
+PAGES.files = async (host) => {
+  const pg = pgShell(host, "Files", "The workspace the agent is confined to. Click a file to preview it or @-reference it in the composer.",
+    '<button class="btn" id="flRefresh">Refresh</button>');
+  const cols = document.createElement("div");
+  cols.className = "cols";
+  cols.innerHTML =
+    '<div class="card" style="align-self:start"><h3 id="flTitle">workspace</h3><div class="bd flush" id="flList"></div></div>' +
+    '<div class="card" style="align-self:start;position:sticky;top:14px"><h3 id="flPrevTitle">Preview</h3><div class="bd" id="flPrev"><div class="empty-state">Select a file to preview it here.</div></div></div>';
+  pg.appendChild(cols);
+  const draw = async () => {
+    $("flTitle").textContent = fileDir === "." ? "workspace root" : fileDir;
+    const j = await getJSON("/files?path=" + encodeURIComponent(fileDir));
+    const list = $("flList");
+    list.replaceChildren();
+    if (fileDir !== ".") {
+      const up = document.createElement("div");
+      up.className = "lrow";
+      up.innerHTML = '<div class="g"><div class="t">..</div></div>';
+      up.addEventListener("click", () => { fileDir = fileDir.split("/").slice(0, -1).join("/") || "."; draw(); });
+      list.appendChild(up);
+    }
+    for (const e of (j.entries || [])) {
+      const rel = fileDir === "." ? e.name : fileDir + "/" + e.name;
+      const row = document.createElement("div");
+      row.className = "lrow";
+      row.innerHTML = '<div class="g"><div class="t">' + (e.dir ? "▸ " : "· ") + esc(e.name) + "</div>" + (e.dir ? "" : '<div class="s">click to preview · double-click to @-reference</div>') + "</div>";
+      if (e.dir) row.addEventListener("click", () => { fileDir = rel; draw(); });
+      else {
+        row.addEventListener("click", () => previewFile(rel, row));
+        row.addEventListener("dblclick", () => { insertAt(rel); openPage("run"); toast("@" + rel + " added to composer"); });
+      }
+      list.appendChild(row);
+    }
+    if (!(j.entries || []).length) list.innerHTML = '<div class="empty-state">Empty directory.</div>';
+  };
+  const previewFile = async (rel, row) => {
+    document.querySelectorAll("#flList .lrow").forEach((r) => r.style.background = "");
+    if (row) row.style.background = "var(--surface-2)";
+    $("flPrevTitle").textContent = rel.split("/").pop();
+    $("flPrev").innerHTML = '<div class="empty-state">Loading…</div>';
+    try {
+      const f = await getJSON("/file?path=" + encodeURIComponent(rel));
+      if (f.binary) { $("flPrev").innerHTML = '<div class="empty-state">Binary file (' + fmt(f.size) + " bytes)</div>"; return; }
+      $("flPrev").replaceChildren();
+      const pre = document.createElement("pre");
+      pre.style.cssText = "margin:0;font:11.5px/1.6 var(--mono);color:var(--fg-dim);white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto";
+      pre.textContent = f.content + (f.truncated ? "\n…[preview truncated]" : "");
+      const bar = document.createElement("div");
+      bar.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px";
+      bar.innerHTML = '<span style="flex:1;font:10.5px var(--mono);color:var(--fg-faint);align-self:center">' + fmt(f.size) + " bytes</span><button class=\"btn\" id=\"flRef\">@-reference</button>";
+      bar.querySelector("#flRef").addEventListener("click", () => { insertAt(rel); openPage("run"); toast("@" + rel + " added to composer"); });
+      $("flPrev").appendChild(bar);
+      $("flPrev").appendChild(pre);
+    } catch (err) {
+      $("flPrev").innerHTML = '<div class="empty-state">' + esc(err.message) + "</div>";
+    }
+  };
+  $("flRefresh").addEventListener("click", draw);
+  await draw();
+};
+
 /* ── Settings ── */
 PAGES.settings = async (host) => {
   const s = await getJSON("/settings");
@@ -2223,9 +2040,7 @@ setInterval(() => { if (currentPage === "overview" && !document.hidden) renderPa
 /* ── init ──────────────────────────────────────────────────── */
 (async function init() {
   emptyState();
-  activePanel = null;
   document.querySelectorAll(".rail button").forEach((b) => b.classList.toggle("on", RAIL_PAGES[b.id] === currentPage));
-  $("work").classList.add("no-panel");
   try {
     const h = await (await fetch("/status")).json();
     $("sbModel").textContent = h.provider + " / " + h.model;
