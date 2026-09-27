@@ -1,0 +1,23 @@
+{
+  "name": "claw",
+  "version": "1.5.0",
+  "description": "CLAW — a terminal coding agent: OpenCode-meets-Claude-Code in one zero-dependency CLI.",
+  "type": "module",
+  "bin": {
+    "claw": "bin/claw"
+  },
+  "scripts": {
+    "claw": "node src/cli.ts",
+    "start": "node src/cli.ts",
+    "selfcheck": "node src/cli.ts selfcheck",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=23.6"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "claw-vscode",
+  "displayName": "CLAW — Coding Agent",
+  "description": "Chat with the CLAW coding agent (claw serve) inside VS Code: chat panel, explain-selection, workspace-scoped sessions.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-id",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["AI", "Chat", "Other"],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "claw.openChat", "title": "Claw: Open Chat", "category": "Claw" },
+      { "command": "claw.explainSelection", "title": "Claw: Explain Selection", "category": "Claw" },
+      { "command": "claw.fixDiagnostic", "title": "Claw: Fix This Diagnostic", "category": "Claw" },
+      { "command": "claw.restartServer", "title": "Claw: Restart Server", "category": "Claw" }
+    ],
+    "configuration": {
+      "title": "CLAW",
+      "properties": {
+        "claw.serverUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8787",
+          "description": "URL of a running `claw serve` instance to attach to."
+        },
+        "claw.cliPath": {
+          "type": "string",
+          "default": "",
+          "description": "How to start `claw serve` if it isn't running: a `claw` command on PATH, or the absolute path to claw's src/cli.ts. Empty = don't auto-start."
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        { "command": "claw.explainSelection", "when": "editorHasSelection", "group": "9_claw" }
+      ]
+    },
+    "keybindings": [
+      { "command": "claw.openChat", "key": "ctrl+shift+alt+c" },
+      { "command": "claw.explainSelection", "key": "ctrl+shift+alt+e", "when": "editorHasSelection" }
+    ]
+  }
+}
