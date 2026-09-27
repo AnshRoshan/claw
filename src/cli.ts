@@ -400,7 +400,11 @@ async function main(): Promise<void> {
     flags.yolo = true; // bypassPermissions ≡ --yolo
   }
   const canAsk = process.stdin.isTTY;
-  const ask = async (call: ToolCall): Promise<boolean> => {
+  // Headless approval bridge: serve installs a broker here so the browser
+  // becomes the human gate (the REPL keeps the TTY prompt below).
+  let approvalBridge: ((call: ToolCall, sessionKey: string) => Promise<boolean>) | null = null;
+  const ask = async (call: ToolCall, sessionKey = "top"): Promise<boolean> => {
+    if (approvalBridge) return await approvalBridge(call, sessionKey);
     if (!canAsk) return false; // non-interactive: deny risky by default
     const args = truncate(call.function.arguments, 100);
     return await askYesNo(`approve ${call.function.name}(${args})?`);
@@ -490,6 +494,24 @@ async function main(): Promise<void> {
         },
         baseURL: config.baseURL,
       },
+      // Headless channels (serve) install an approval broker here; the shared
+      // `ask` closure reads it, so every world built later sees it too.
+      setApprovalBridge: (fn: ((call: ToolCall, sessionKey: string) => Promise<boolean>) | null) => {
+        approvalBridge = fn;
+      },
+      // Runtime model swap (/model from the workbench): rebuild the provider
+      // for an alias/name and hot-swap it into this world's agent.
+      setModel: (name: string) => {
+        ag.swapProvider(makeProvider(name));
+        config.model = name;
+        return { provider: ag.provider.name, model: ag.provider.model };
+      },
+      modelInfo: () => ({
+        provider: ag.provider.name,
+        model: ag.provider.model,
+        aliases: Object.keys(config.models),
+        defaultModel: config.model,
+      }),
     };
   };
 
@@ -604,6 +626,10 @@ async function main(): Promise<void> {
         world.workspace = w2.workspace;
         world.approveState = w2.approveState;
         world.settings = w2.settings;
+        world.setupRequired = w2.setupRequired;
+        world.setApprovalBridge = w2.setApprovalBridge;
+        world.setModel = w2.setModel;
+        world.modelInfo = w2.modelInfo;
         recordWorkspace(dir);
         return { ok: true };
       },

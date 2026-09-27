@@ -386,6 +386,122 @@ input, textarea, select { font: inherit; color: inherit; }
 .sb-mode-badge[data-mode="acceptEdits"] { color: var(--warn); }
 .sb-mode-badge[data-mode="bypass"] { color: var(--danger); }
 
+/* ══════════════════════════ operator console pages ══════════════════════════ */
+.run-page { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.center.page-mode .run-page { display: none; }
+.page-view { display: none; flex: 1; min-height: 0; overflow-y: auto; }
+.center.page-mode .page-view { display: block; }
+.pg { max-width: 1180px; margin: 0 auto; padding: 26px 28px 40px; display: flex; flex-direction: column; gap: 16px; }
+.pg-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.pg-head h1 { margin: 0; font-size: 20px; font-weight: 650; letter-spacing: -0.02em; }
+.pg-head p { margin: 4px 0 0; font-size: 12.5px; color: var(--fg-dim); max-width: 640px; }
+.pg-actions { display: flex; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 8px;
+  border: 1px solid var(--hairline-strong); background: var(--surface-2); color: var(--fg-dim);
+  font-size: 12px; font-weight: 500; transition: all var(--dur-hover) var(--ease);
+}
+.btn:hover { color: var(--fg); background: var(--surface-3); }
+.btn.solid { background: var(--fg); color: var(--bg); border-color: transparent; }
+.btn.solid:hover { opacity: .88; }
+.btn.ok { background: var(--accent); color: #05210d; border-color: transparent; }
+.btn.ok:hover { filter: brightness(1.08); }
+.btn.bad { color: var(--danger); }
+.btn.bad:hover { background: rgba(255, 69, 58, .12); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.mrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.mrow .m { padding: 12px 16px; border-left: 1px solid var(--hairline); min-width: 0; }
+.mrow .m:first-child { border-left: 0; }
+.mrow .m .k { font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-faint); }
+.mrow .m .v { font: 600 19px var(--mono); color: var(--fg); margin-top: 4px; letter-spacing: -0.02em; }
+.mrow .m .d { font-size: 10.5px; color: var(--fg-faint); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card { border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.card > h3 { margin: 0; padding: 11px 14px; border-bottom: 1px solid var(--hairline); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.card > h3 .r { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--blue); cursor: pointer; font-size: 11px; }
+.card > h3 .r:hover { text-decoration: underline; }
+.card .bd { padding: 12px 14px; }
+.card .bd.flush { padding: 0; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 900px) { .cols { grid-template-columns: 1fr; } }
+.pill { display: inline-flex; align-items: center; gap: 5px; font: 10px var(--mono); letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--hairline-strong); border-radius: 999px; padding: 2px 8px; color: var(--fg-dim); }
+.pill.ok { color: var(--accent); border-color: rgba(48, 211, 88, .4); }
+.pill.warn { color: var(--warn); border-color: rgba(255, 214, 10, .4); }
+.pill.bad { color: var(--danger); border-color: rgba(255, 69, 58, .4); }
+.pill.dim { color: var(--fg-faint); }
+.lrow { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid var(--hairline); cursor: pointer; transition: background var(--dur-hover) var(--ease); min-width: 0; }
+.lrow:last-child { border-bottom: 0; }
+.lrow:hover { background: var(--surface-2); }
+.lrow .g { flex: 1; min-width: 0; }
+.lrow .t { font-size: 12.5px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .s { font: 10.5px var(--mono); color: var(--fg-faint); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gauge { padding: 10px 14px; }
+.gauge .g-lab { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); }
+.gauge .g-val { font: 600 17px var(--mono); color: var(--fg); margin: 5px 0 7px; }
+.gauge .g-bar { height: 5px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
+.gauge .g-bar i { display: block; height: 100%; border-radius: 3px; background: var(--accent); transition: width var(--dur) var(--ease); }
+.gauge.blue .g-bar i { background: var(--blue); }
+.spark { display: block; width: 100%; height: 44px; }
+.spark path { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+.spark path.area { fill: var(--accent-dim); stroke: none; }
+.ap-card { border: 1px solid rgba(255, 214, 10, .45); border-radius: var(--radius); background: rgba(255, 214, 10, .05); padding: 12px 14px; }
+.ap-card .ap-h { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--warn); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+.ap-card .ap-n { font: 600 13px var(--mono); color: var(--fg); margin: 7px 0 2px; word-break: break-all; }
+.ap-card .ap-a { font: 11px/1.6 var(--mono); color: var(--fg-dim); max-height: 88px; overflow: auto; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 7px; padding: 7px 9px; margin: 8px 0; white-space: pre-wrap; word-break: break-word; }
+.ap-card .ap-b { display: flex; gap: 8px; justify-content: flex-end; }
+textarea.code {
+  width: 100%; min-height: 380px; background: var(--surface-2); border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius); padding: 13px 15px; font: 12.5px/1.7 var(--mono); color: var(--fg);
+  outline: none; resize: vertical;
+}
+textarea.code:focus { border-color: rgba(48, 211, 88, .4); }
+.tbl { width: 100%; border-collapse: collapse; font: 11.5px var(--mono); }
+.tbl th { text-align: left; padding: 8px 12px; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-faint); border-bottom: 1px solid var(--hairline); font-weight: 600; }
+.tbl td { padding: 7px 12px; border-bottom: 1px solid var(--hairline); color: var(--fg-dim); vertical-align: top; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tr:hover td { background: var(--surface-2); }
+.tbl td .mono-dim { color: var(--fg-faint); }
+.empty-state { padding: 34px; text-align: center; color: var(--fg-faint); font-size: 12.5px; }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.field label { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-faint); }
+.field input, .field select { background: var(--surface-2); border: 1px solid var(--hairline-strong); border-radius: 8px; padding: 8px 11px; font: 12.5px var(--mono); color: var(--fg); outline: none; }
+.field input:focus { border-color: rgba(48, 211, 88, .4); }
+/* toasts */
+#toasts { position: fixed; bottom: 40px; right: 14px; z-index: 90; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: 9px; background: var(--surface-2); border: 1px solid var(--hairline-strong);
+  border-radius: 10px; padding: 9px 13px; font-size: 12px; color: var(--fg); box-shadow: 0 12px 32px rgba(0,0,0,.45);
+  animation: tin var(--dur) var(--ease); max-width: 340px;
+}
+.toast.out { opacity: 0; transform: translateX(14px); transition: all .25s var(--ease); }
+.toast .tdot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
+.toast.warn .tdot { background: var(--warn); }
+.toast.bad .tdot { background: var(--danger); }
+@keyframes tin { from { opacity: 0; transform: translateX(18px); } }
+/* command palette */
+#palette { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.55); backdrop-filter: blur(3px); display: none; padding-top: 12vh; justify-content: center; }
+#palette.open { display: flex; }
+.pal { width: min(560px, calc(100vw - 32px)); height: fit-content; max-height: 60vh; background: var(--surface-2); border: 1px solid var(--hairline-strong); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6); display: flex; flex-direction: column; animation: palin var(--dur) var(--ease); }
+@keyframes palin { from { opacity: 0; transform: translateY(-10px) scale(.99); } }
+.pal-in { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-bottom: 1px solid var(--hairline); }
+.pal-in input { flex: 1; background: none; border: 0; outline: 0; color: var(--fg); font: 14px var(--font); }
+.pal-in .esc { font: 10px var(--mono); color: var(--fg-faint); border: 1px solid var(--hairline); border-radius: 5px; padding: 2px 6px; }
+.pal-list { overflow-y: auto; }
+.pal-item { display: flex; align-items: center; gap: 11px; padding: 9px 15px; cursor: pointer; border-bottom: 1px solid var(--hairline); }
+.pal-item:last-child { border-bottom: 0; }
+.pal-item .pi-dot { width: 6px; height: 6px; border-radius: 2px; background: var(--hairline-strong); transform: rotate(45deg); flex: none; }
+.pal-item.sel { background: var(--surface-3); }
+.pal-item.sel .pi-dot { background: var(--accent); }
+.pal-item .pi-l { flex: 1; font-size: 12.5px; color: var(--fg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pal-item.sel .pi-l { color: var(--fg); }
+.pal-item .pi-d { font: 10px var(--mono); color: var(--fg-faint); text-transform: uppercase; letter-spacing: .06em; }
+.pal-foot { border-top: 1px solid var(--hairline); padding: 7px 15px; font: 10px var(--mono); color: var(--fg-faint); display: flex; justify-content: space-between; }
+/* rail nav grouping */
+.rail .rsep { width: 22px; height: 1px; background: var(--hairline); margin: 5px 0; flex: none; }
+.rail .rtag { font: 8px var(--mono); letter-spacing: .06em; color: var(--fg-faint); writing-mode: vertical-rl; margin-top: 2px; }
+.rail button .dotmark { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--warn); display: none; }
+.rail button.has-pending .dotmark { display: block; animation: pulse 1.2s var(--ease) infinite; }
+.rail button .kbdhint { position: absolute; bottom: 2px; right: 3px; font: 7px var(--mono); color: var(--fg-faint); }
+
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
 /* ══════════ responsive: the workbench must survive narrow windows ══════════ */
@@ -469,6 +585,10 @@ input, textarea, select { font: inherit; color: inherit; }
     <div class="session-menu" id="sessionMenu"></div>
   </div>
   <div class="spacer"></div>
+  <button class="tb-btn" id="palBtn" title="Command palette (Ctrl+K)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+    <span class="t">Search</span>
+  </button>
   <div class="segmented" id="modeSeg" title="Permission mode">
     <button data-mode="default">Default</button>
     <button data-mode="plan">Plan</button>
@@ -484,17 +604,34 @@ input, textarea, select { font: inherit; color: inherit; }
 <!-- ══════════ work area ══════════ -->
 <div class="work" id="work">
   <div class="rail">
+    <button id="navOverview" title="Overview — live status of the agent">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+    </button>
+    <button id="navRun" class="on" title="Run — chat with the agent">
+      <span class="dotmark"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12a8 8 0 0 1-8 8 8.5 8.5 0 0 1-3.4-.7L4 21l1.7-4.6A8 8 0 1 1 20 12z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="rsep"></div>
     <button id="navSessions" title="Sessions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <button id="navFiles" title="Workspace files">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h4l2 2.5h7A1.5 1.5 0 0 1 20 8v10.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13z" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button id="navSkills" title="Skills &amp; commands">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3L5 13.5h5L9.5 21l8-10.5h-5L13 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <button id="navModels" title="Models — routing & switch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3" stroke-linecap="round"/></svg>
     </button>
     <button id="navMcp" title="MCP servers">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01" stroke-linecap="round"/></svg>
+    </button>
+    <button id="navMemory" title="Memory — CLAW.md project instructions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5v-15zM5 19.5A1.5 1.5 0 0 1 6.5 18H19v3H6.5A1.5 1.5 0 0 1 5 19.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="navSkills" title="Skills & commands">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 3L5 13.5h5L9.5 21l8-10.5h-5L13 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="navAudit" title="Audit — operator console log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke-linecap="round"/></svg>
     </button>
   </div>
 
@@ -504,7 +641,8 @@ input, textarea, select { font: inherit; color: inherit; }
     <div class="panel-foot" id="panelFoot"></div>
   </div>
 
-  <div class="center">
+  <div class="center" id="center">
+    <div class="run-page" id="runPage">
     <div class="stream" id="stream"><div class="stream-inner" id="streamInner"></div></div>
 
     <div class="console hidden" id="console">
@@ -554,6 +692,22 @@ input, textarea, select { font: inherit; color: inherit; }
       </div>
       <div class="mentions" id="mentions"></div>
     </div>
+    </div><!-- /run-page -->
+    <div class="page-view" id="pageView"></div>
+  </div>
+</div>
+
+<!-- ══════════ toasts + command palette ══════════ -->
+<div id="toasts"></div>
+<div id="palette">
+  <div class="pal">
+    <div class="pal-in">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--fg-faint)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
+      <input id="palInput" placeholder="Search pages, sessions, actions…" autocomplete="off">
+      <span class="esc">esc</span>
+    </div>
+    <div class="pal-list" id="palList"></div>
+    <div class="pal-foot"><span>↑↓ navigate · ↵ open</span><span id="palCount"></span></div>
   </div>
 </div>
 
@@ -1200,6 +1354,8 @@ async function setMode(mode) {
   if (j.error) { logLine("err", "mode: " + j.error); return; }
   applyMode(j.mode);
   logLine("done", "permission mode → " + j.mode);
+  audit("mode changed", j.mode, j.mode === "bypass" ? "warning" : "info", "permission policy updated");
+  toast("Mode: " + j.mode, j.mode === "bypass" ? "warn" : "ok");
 }
 function applyMode(mode) {
   document.querySelectorAll("#modeSeg button").forEach((b) => b.classList.toggle("on", b.dataset.mode === mode));
@@ -1366,6 +1522,8 @@ async function send() {
   const live = addMsg("assistant", '<span class="typing"><i></i><i></i><i></i></span>');
   let text = "", thinkText = "", thinkEl = null;
   logLine("done", "→ " + message.slice(0, 90));
+  lastPrompt = message;
+  audit("run started", message.slice(0, 60), "info", "mode " + $("sbMode").textContent);
   wfReset(message.slice(0, 70));
   try {
     const r = await fetch("/chat", {
@@ -1420,6 +1578,8 @@ async function send() {
             if (Date.now() - lastTouch > 250) { lastTouch = Date.now(); wfTouch(reasonAct); }
           }
           else if (j.type === "tool") toolCard(j);
+          else if (j.type === "approval") approvalCard(j);
+          else if (j.type === "approval-resolved") approvalResolved(j);
           else if (j.type === "done") final = j;
           else if (j.type === "error") err = j.error;
         }
@@ -1436,7 +1596,11 @@ async function send() {
       if (final.usage) {
         totals.input += final.usage.input; totals.output += final.usage.output; totals.calls += final.usage.calls;
         $("meter").textContent = "in " + fmt(totals.input) + " · out " + fmt(totals.output) + " · " + totals.calls + " calls";
+        lastTurn = { input: final.usage.input, output: final.usage.output, ms: Date.now() - turnT0 };
+        turnDurations.push(lastTurn.ms);
       }
+      audit("run completed", (final.session_id || "").slice(0, 18), "success", (final.tool_calls || 0) + " tool calls · " + (Date.now() - turnT0) + "ms");
+      toast("Run complete · " + (Date.now() - turnT0) + "ms");
       logLine("done", "turn complete: " + (final.tool_calls || 0) + " tool calls");
       if (reasonAct && reasonAct.ok === null) wfFinish(reasonAct, true);
       if (textAct && textAct.ok === null) wfFinish(textAct, true);
@@ -1455,11 +1619,14 @@ async function send() {
       live.parentElement.className = "msg err claw";
       logLine("err", err);
       if (turnAct) wfFinish(turnAct, false, err);
+      audit("run failed", sessionId || "?", "warning", err.slice(0, 120));
+      toast("Run failed: " + err.slice(0, 60), "bad");
     }
   } catch (e2) {
     live.innerHTML = "<b>request failed:</b> " + esc(e2.message);
     logLine("err", e2.message);
     if (turnAct) wfFinish(turnAct, false, e2.message);
+    audit("run failed", sessionId || "?", "warning", e2.message.slice(0, 120));
   }
   busy = false; sendBtn.disabled = false;
   input.focus();
@@ -1615,11 +1782,449 @@ $("connectBtn").addEventListener("click", async () => {
   }
 });
 
+/* ════════════════════════════════════════════════════════════
+   OPERATOR CONSOLE — pages, command palette, toasts, audit log,
+   live approvals. Rail = primary nav; the chat is the Run page.
+   ════════════════════════════════════════════════════════════ */
+const PAGE_TITLES = { overview: "Overview", run: "Run", sessions: "Sessions", models: "Models", mcp: "MCP", memory: "Memory", skills: "Skills", audit: "Audit", settings: "Settings" };
+const RAIL_PAGES = { navOverview: "overview", navRun: "run", navSessions: "sessions", navModels: "models", navMcp: "mcp", navMemory: "memory", navSkills: "skills", navAudit: "audit" };
+let currentPage = "run";
+let lastPrompt = "";
+const turnDurations = [];
+let lastTurn = null;
+
+/* ── toasts ── */
+function toast(msg, tone) {
+  const el = document.createElement("div");
+  el.className = "toast" + (tone ? " " + tone : "");
+  el.innerHTML = '<span class="tdot"></span>' + esc(msg);
+  $("toasts").appendChild(el);
+  setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 300); }, 3200);
+}
+
+/* ── audit log (browser-local record of operator + agent events) ── */
+const AUDIT_KEY = "claw.audit.v1";
+function auditRead() {
+  try { return JSON.parse(localStorage.getItem(AUDIT_KEY) || "[]"); } catch { return []; }
+}
+function audit(action, target, result, detail) {
+  const list = auditRead();
+  list.unshift({ t: Date.now(), action, target: String(target || "").slice(0, 90), result, detail: String(detail || "").slice(0, 160) });
+  try { localStorage.setItem(AUDIT_KEY, JSON.stringify(list.slice(0, 300))); } catch { /* storage full — log is best-effort */ }
+  if (currentPage === "audit") renderPage();
+}
+const auditTone = (r) => r === "success" ? "ok" : r === "blocked" ? "bad" : r === "warning" ? "warn" : "dim";
+
+/* ── approvals (live + browser gate) ── */
+const liveApprovals = new Map();
+function railPending(on) {
+  const run = $("navRun");
+  if (run) run.classList.toggle("has-pending", on);
+}
+function approvalCard(j) {
+  if (liveApprovals.has(j.id)) return;
+  liveApprovals.set(j.id, j);
+  railPending(true);
+  toast("Approval required: " + j.name, "warn");
+  audit("approval requested", j.name, "info", "operator decision pending");
+  const empty = inner.querySelector(".empty");
+  if (empty) empty.remove();
+  const card = document.createElement("div");
+  card.className = "ap-card";
+  card.dataset.appr = j.id;
+  card.style.margin = "0 0 14px 28px";
+  card.innerHTML =
+    '<div class="ap-h"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3l9-16z" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke-linecap="round"/></svg> authorization required</div>' +
+    '<div class="ap-n">' + esc(j.name) + "</div>" +
+    '<div class="ap-a">' + esc(prettyArgs(j.args)) + "</div>" +
+    '<div class="ap-b"><button class="btn bad" data-deny>Deny</button><button class="btn ok" data-allow>Authorize</button></div>';
+  const settle = (approve) => {
+    card.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+    fetch("/approve", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: j.id, approve }) })
+      .then((r) => r.json())
+      .then((r) => { if (r.error) { card.querySelector(".ap-h").textContent = r.error; } });
+    audit(approve ? "tool authorized" : "tool authorization denied", j.name, approve ? "success" : "blocked", "operator decision");
+  };
+  card.querySelector("[data-allow]").addEventListener("click", () => settle(true));
+  card.querySelector("[data-deny]").addEventListener("click", () => settle(false));
+  inner.appendChild(card);
+  stick();
+}
+function approvalResolved(j) {
+  liveApprovals.delete(j.id);
+  railPending(liveApprovals.size > 0);
+  const card = inner.querySelector('[data-appr="' + j.id + '"]');
+  if (card) {
+    card.style.borderColor = j.approve ? "rgba(48,211,88,.45)" : "rgba(255,69,58,.45)";
+    card.querySelector(".ap-h").innerHTML = j.approve ? "authorized — executing" : j.why === "expired" ? "expired — not executed" : "denied — not executed";
+    card.querySelector(".ap-h").style.color = j.approve ? "var(--accent)" : "var(--danger)";
+    card.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+  }
+}
+function prettyArgs(raw) {
+  try { return JSON.stringify(JSON.parse(raw), null, 1); } catch { return String(raw || ""); }
+}
+
+/* ── router + pages ── */
+function openPage(name) {
+  currentPage = name;
+  location.hash = "#/" + name;
+  $("center").classList.toggle("page-mode", name !== "run");
+  document.querySelectorAll(".rail button").forEach((b) => b.classList.toggle("on", RAIL_PAGES[b.id] === name));
+  renderPage();
+}
+document.querySelector(".rail").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.id === "navFiles") {
+    e.stopPropagation();
+    openPage("run");
+    togglePanel("files");
+    return;
+  }
+  const page = RAIL_PAGES[b.id];
+  if (page) {
+    e.stopPropagation();
+    if (page === "sessions" && b.classList.contains("on") && currentPage === "run") { openPage("run"); return; }
+    openPage(page);
+  }
+}, true);
+
+async function renderPage() {
+  const host = $("pageView");
+  if (currentPage === "run") return;
+  host.innerHTML = '<div class="pg"><div class="empty-state">Loading…</div></div>';
+  const fn = PAGES[currentPage] || PAGES.overview;
+  try { await fn(host); } catch (err) {
+    host.innerHTML = '<div class="pg"><div class="empty-state">Failed to load: ' + esc(err.message) + "</div></div>";
+  }
+}
+const PAGES = {};
+function pgShell(host, title, desc, actions) {
+  host.replaceChildren();
+  const pg = document.createElement("div");
+  pg.className = "pg";
+  pg.innerHTML =
+    '<div class="pg-head"><div><h1>' + esc(title) + "</h1><p>" + esc(desc) + "</p></div>" +
+    '<div class="pg-actions">' + (actions || "") + "</div></div>";
+  host.appendChild(pg);
+  return pg;
+}
+const getJSON = (u) => fetch(u).then((r) => r.json());
+function sparkSvg(data, w, h) {
+  w = w || 240; h = h || 44;
+  if (!data.length) return '<div style="height:' + h + 'px"></div>';
+  const max = Math.max(...data, 1), min = Math.min(...data, 0);
+  const pts = data.map((v, i) => [(i / Math.max(1, data.length - 1)) * w, h - ((v - min) / (max - min || 1)) * (h - 6) - 3]);
+  const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  return '<svg class="spark" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none"><path class="area" d="' + d + " L " + w + " " + h + " L 0 " + h + ' Z"/><path d="' + d + '"/></svg>';
+}
+
+/* ── Overview ── */
+PAGES.overview = async (host) => {
+  const [st, sess, appr, mem] = await Promise.all([getJSON("/status"), getJSON("/sessions"), getJSON("/approvals"), getJSON("/memory")]);
+  const pg = pgShell(host, "Operator overview", "What the agent is doing, what needs your approval, and how the run is holding up.",
+    '<button class="btn" data-act="palette">⌘K commands</button><button class="btn solid" data-act="new">New run</button>');
+  const pending = appr.pending || [];
+  const total = totals;
+  const ctxPct = lastTurn ? Math.min(100, (lastTurn.input / 128000) * 100) : 0;
+  const tps = lastTurn && lastTurn.ms ? (lastTurn.output / (lastTurn.ms / 1000)) : 0;
+  pg.insertAdjacentHTML("beforeend",
+    '<div class="mrow">' +
+    '<div class="m"><div class="k">status</div><div class="v" style="font-size:14px;padding-top:4px">' + (st.configured ? '<span class="pill ok">model ready</span>' : '<span class="pill warn">setup needed</span>') + "</div><div class='d'>" + esc(st.provider + " / " + st.model) + "</div></div>" +
+    '<div class="m"><div class="k">mode</div><div class="v" style="font-size:14px;padding-top:4px"><span class="pill ' + (st.mode === "bypass" ? "bad" : st.mode === "default" ? "ok" : "warn") + '">' + esc(st.mode) + "</span></div><div class=\"d\">tool authorization policy</div></div>" +
+    '<div class="m"><div class="k">sessions</div><div class="v">' + (sess.sessions || []).length + '</div><div class="d">stored on this machine</div></div>' +
+    '<div class="m"><div class="k">tokens</div><div class="v">' + fmt(total.input + total.output) + '</div><div class="d">in ' + fmt(total.input) + " · out " + fmt(total.output) + " · " + total.calls + " calls</div></div>" +
+    '<div class="m"><div class="k">approvals</div><div class="v" style="' + (pending.length ? "color:var(--warn)" : "") + '">' + pending.length + '</div><div class="d">waiting on you right now</div></div>' +
+    "</div>");
+  const cols = document.createElement("div");
+  cols.className = "cols";
+  cols.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:14px;min-width:0">' +
+    (pending.length ? '<div class="card"><h3>Needs authorization</h3><div class="bd flush" id="ovPending"></div></div>' : "") +
+    '<div class="card"><h3>Active run<span class="r" data-goto="run">open console →</span></h3><div class="bd">' +
+    '<div style="display:flex;gap:10px;align-items:center"><span class="pill ' + (busy ? "warn" : "ok") + '">' + (busy ? "executing" : "idle") + "</span><b style=\"font-size:13px\">" + esc($("sessionLabel").textContent) + "</b></div>" +
+    '<p style="margin:9px 0 0;font-size:12.5px;color:var(--fg-dim);max-height:66px;overflow:auto">' + esc(lastPrompt || "No prompt yet — open the Run page and ask for something.") + "</p></div></div>" +
+    '<div class="card"><h3>Recent runs<span class="r" data-goto="sessions">all sessions →</span></h3><div class="bd flush" id="ovRecent"></div></div>' +
+    '<div class="card"><h3>Latest events<span class="r" data-goto="audit">full audit →</span></h3><div class="bd flush" id="ovEvents"></div></div>' +
+    "</div>" +
+    '<div style="display:flex;flex-direction:column;gap:14px;min-width:0">' +
+    '<div class="card"><h3>Instruments</h3><div class="bd flush" style="display:grid;grid-template-columns:1fr 1fr">' +
+    '<div class="gauge blue"><div class="g-lab"><span>context est.</span><span>' + ctxPct.toFixed(0) + '%</span></div><div class="g-val">' + fmt(lastTurn ? lastTurn.input : 0) + " <span style=\"font-size:10px;color:var(--fg-faint)\">/ 128k</span></div><div class=\"g-bar\"><i style=\"width:" + ctxPct.toFixed(1) + '%"></i></div></div>' +
+    '<div class="gauge"><div class="g-lab"><span>throughput</span><span>tok/s</span></div><div class="g-val">' + tps.toFixed(1) + '</div><div class="g-bar"><i style="width:' + Math.min(100, tps * 2).toFixed(0) + '%"></i></div></div>' +
+    "</div>" +
+    '<div style="padding:10px 14px;border-top:1px solid var(--hairline)"><div class="g-lab" style="display:flex;justify-content:space-between;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint)"><span>turn latency</span><span>' + (turnDurations.length ? turnDurations[turnDurations.length - 1] + "ms" : "—") + '</span></div>' + sparkSvg(turnDurations.slice(-40)) + "</div>" +
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--hairline)">' +
+    [["gateway", true], ["model", !!st.configured], ["mcp", (st.mcp || []).length > 0], ["memory", mem.exists]].map(([n, ok]) =>
+      '<div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 0;border-left:1px solid var(--hairline)' + (n === "gateway" ? ";border-left:0" : "") + '"><span style="width:6px;height:6px;border-radius:50%;background:' + (ok ? "var(--accent)" : "var(--fg-faint)") + '"></span><span style="font-size:9.5px;color:var(--fg-faint);text-transform:uppercase;letter-spacing:.06em">' + n + "</span></div>").join("") +
+    "</div></div>" +
+    '<div class="card"><h3>Quick launch</h3><div class="bd" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' +
+    '<button class="btn" data-goto="run">Start a run</button><button class="btn" data-goto="models">Switch model</button><button class="btn" data-goto="memory">Edit memory</button><button class="btn" data-goto="audit">Inspect audit</button>' +
+    "</div></div></div>";
+  pg.appendChild(cols);
+  const pendHost = $("ovPending");
+  if (pendHost) for (const p of pending) {
+    const row = document.createElement("div");
+    row.className = "lrow";
+    row.style.cursor = "default";
+    row.innerHTML = '<div class="g"><div class="t">' + esc(p.name) + '</div><div class="s">' + esc(prettyArgs(p.args).slice(0, 120).replace(/\n/g, " ")) + "</div></div>" +
+      '<button class="btn bad" data-deny>Deny</button><button class="btn ok" data-allow>Authorize</button>';
+    const go = (ok2) => fetch("/approve", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: p.id, approve: ok2 }) }).then(renderPage);
+    row.querySelector("[data-allow]").addEventListener("click", () => go(true));
+    row.querySelector("[data-deny]").addEventListener("click", () => go(false));
+    pendHost.appendChild(row);
+  }
+  const recHost = $("ovRecent");
+  for (const s of (sess.sessions || []).slice(0, 5)) {
+    const row = document.createElement("div");
+    row.className = "lrow";
+    row.innerHTML = '<div class="g"><div class="t">' + esc(s.title || s.id) + '</div><div class="s">' + esc(s.model) + " · " + s.turns + " turns · " + new Date(s.createdAt).toLocaleString() + '</div></div><span class="pill dim">open →</span>';
+    row.addEventListener("click", () => { openSession(s.id); openPage("run"); });
+    recHost.appendChild(row);
+  }
+  if (!(sess.sessions || []).length) recHost.innerHTML = '<div class="empty-state">No runs yet.</div>';
+  const evHost = $("ovEvents");
+  const evs = auditRead().slice(0, 6);
+  evHost.innerHTML = evs.length ? evs.map((e2) =>
+    '<div class="lrow" style="cursor:default"><span style="font:10.5px var(--mono);color:var(--fg-faint);width:56px;flex:none">' + new Date(e2.t).toLocaleTimeString() + '</span><div class="g"><div class="t" style="font-size:12px">' + esc(e2.action) + ' <span style="color:var(--fg-dim)">· ' + esc(e2.target) + "</span></div></div><span class=\"pill " + auditTone(e2.result) + '">' + esc(e2.result) + "</span></div>").join("")
+    : '<div class="empty-state">Nothing yet — operator actions and approvals land here.</div>';
+};
+
+/* ── Sessions ── */
+PAGES.sessions = async (host) => {
+  const j = await getJSON("/sessions");
+  const pg = pgShell(host, "Sessions", "Every stored conversation. Click to replay the full trajectory in the Run console.",
+    '<button class="btn solid" data-act="new">New run</button>');
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = '<h3>' + (j.sessions || []).length + ' sessions</h3><div class="bd flush"><input id="sessSearch" placeholder="Search inside session contents…" style="width:100%;box-sizing:border-box;background:var(--surface-2);border:0;border-bottom:1px solid var(--hairline);padding:10px 14px;color:var(--fg);font:12px var(--mono);outline:none"><div id="sessList"></div></div>';
+  pg.appendChild(card);
+  const list = $("sessList");
+  const draw = (items) => {
+    list.replaceChildren();
+    if (!items.length) { list.innerHTML = '<div class="empty-state">No sessions match.</div>'; return; }
+    for (const s of items) {
+      const row = document.createElement("div");
+      row.className = "lrow";
+      row.innerHTML = '<div class="g"><div class="t">' + esc(s.title || s.id) + '</div><div class="s">' + esc(s.id) + " · " + esc(s.model) + " · " + s.turns + " turns · " + new Date(s.createdAt).toLocaleString() + '</div></div><span class="pill dim">replay →</span>';
+      row.addEventListener("click", () => { openSession(s.id); openPage("run"); });
+      list.appendChild(row);
+    }
+  };
+  draw(j.sessions || []);
+  $("sessSearch").addEventListener("input", async (e2) => {
+    const q = e2.target.value.trim();
+    if (!q) return draw(j.sessions || []);
+    try {
+      const r = await getJSON("/search?q=" + encodeURIComponent(q));
+      const ids = new Set((r.results || r.sessions || []).map((x) => x.id || x.session_id));
+      draw((j.sessions || []).filter((s) => ids.has(s.id)));
+    } catch { draw(j.sessions || []); }
+  });
+};
+
+/* ── Models ── */
+PAGES.models = async (host) => {
+  const m = await getJSON("/models");
+  const pg = pgShell(host, "Models", "The active model and every configured alias. Switching is live — history survives.");
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = '<h3>Active</h3><div class="bd"><div style="font:600 15px var(--mono);color:var(--fg)">' + esc(m.provider + " / " + m.model) + '</div><div style="font-size:11.5px;color:var(--fg-faint);margin-top:4px">default: ' + esc(m.defaultModel) + "</div></div>";
+  pg.appendChild(card);
+  const aliases = m.aliases || [];
+  const card2 = document.createElement("div");
+  card2.className = "card";
+  card2.innerHTML = "<h3>Switch model</h3>";
+  const body = document.createElement("div");
+  body.className = "bd";
+  body.innerHTML = '<div class="field"><label>model or alias</label><input id="mIn" placeholder="' + esc(aliases[0] || "gpt-4o-mini") + '" list="mList"><datalist id="mList">' + aliases.map((a) => "<option value=\"" + esc(a) + "\">").join("") + '</datalist></div><button class="btn solid" id="mGo">Switch</button><div id="mMsg" style="margin-top:8px;font-size:11.5px;color:var(--fg-faint)"></div>';
+  card2.appendChild(body);
+  pg.appendChild(card2);
+  $("mGo").addEventListener("click", async () => {
+    const name = $("mIn").value.trim();
+    if (!name) return;
+    const r = await fetch("/models", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ model: name }) }).then((x) => x.json());
+    if (r.error) { $("mMsg").textContent = r.error; $("mMsg").style.color = "var(--danger)"; }
+    else { $("mMsg").textContent = "switched to " + r.provider + " / " + r.model; $("mMsg").style.color = "var(--accent)"; $("sbModel").textContent = r.provider + " / " + r.model; toast("Model switched: " + r.model); audit("model switched", name, "success", r.provider + " / " + r.model); }
+  });
+};
+
+/* ── MCP ── */
+PAGES.mcp = async (host) => {
+  const st = await getJSON("/status");
+  const pg = pgShell(host, "MCP servers", "Model Context Protocol adapters connected to this agent — their tools join the loop under the same guards.",
+    '<button class="btn" data-act="copyAdd">copy add command</button>');
+  const servers = st.mcp || [];
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = "<h3>" + servers.length + " connected</h3>";
+  const body = document.createElement("div");
+  body.className = "bd flush";
+  if (!servers.length) body.innerHTML = '<div class="empty-state">No MCP servers connected.<br><span style="font-family:var(--mono);font-size:11px">claw mcp add &lt;name&gt; &lt;command&gt; … — or --url for remote</span></div>';
+  for (const s of servers) {
+    const row = document.createElement("div");
+    row.className = "lrow";
+    row.style.cursor = "default";
+    row.innerHTML = '<div class="g"><div class="t">' + esc(s.name) + ' <span class="pill dim">' + esc(s.transport) + "</span></div><div class=\"s\">" + s.tools.length + " tools: " + esc(s.tools.join(", ").slice(0, 140)) + "</div></div>";
+    body.appendChild(row);
+  }
+  card.appendChild(body);
+  pg.appendChild(card);
+};
+
+/* ── Memory ── */
+PAGES.memory = async (host) => {
+  const mem = await getJSON("/memory");
+  const pg = pgShell(host, "Memory — CLAW.md", "Project instructions every session reads and obeys. Edit here, in the CLI, or with # notes in chat.",
+    '<button class="btn solid" id="memSave">Save</button>');
+  const wrap = document.createElement("div");
+  wrap.innerHTML = '<textarea class="code" id="memText" spellcheck="false" placeholder="# CLAW.md&#10;&#10;Project instructions for CLAW…"></textarea><div id="memMsg" style="margin-top:8px;font-size:11.5px;color:var(--fg-faint)"></div>';
+  pg.appendChild(wrap);
+  $("memText").value = mem.content || "";
+  $("memSave").addEventListener("click", async () => {
+    const r = await fetch("/memory", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ content: $("memText").value }) }).then((x) => x.json());
+    if (r.error) { $("memMsg").textContent = r.error; $("memMsg").style.color = "var(--danger)"; }
+    else { $("memMsg").textContent = "saved " + r.bytes + " bytes — future sessions obey it"; $("memMsg").style.color = "var(--accent)"; toast("CLAW.md saved"); audit("memory updated", "CLAW.md", "success", r.bytes + " bytes"); }
+  });
+};
+
+/* ── Skills ── */
+PAGES.skills = async (host) => {
+  const sk = await getJSON("/skills");
+  const pg = pgShell(host, "Skills & commands", "Custom slash commands from .claw/commands/*.md — type /name in the Run console.");
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = "<h3>" + (sk.commands || []).length + " commands" + (sk.instructions ? ' · CLAW.md present' : ' · no CLAW.md yet') + "</h3>";
+  const body = document.createElement("div");
+  body.className = "bd flush";
+  if (!(sk.commands || []).length) body.innerHTML = '<div class="empty-state">No custom commands. Create <span style="font-family:var(--mono)">.claw/commands/name.md</span> and it becomes /name.</div>';
+  for (const c of sk.commands || []) {
+    const row = document.createElement("div");
+    row.className = "lrow";
+    row.innerHTML = '<div class="g"><div class="t">/' + esc(c.name) + '</div><div class="s">' + esc(c.source) + "</div></div>";
+    body.appendChild(row);
+  }
+  card.appendChild(body);
+  pg.appendChild(card);
+};
+
+/* ── Audit ── */
+PAGES.audit = async (host) => {
+  const pg = pgShell(host, "Audit", "This browser's record of operator actions, approvals, and switches. Stored locally.",
+    '<button class="btn bad" id="audClear">Clear</button>');
+  const card = document.createElement("div");
+  card.className = "card";
+  const rows = auditRead();
+  card.innerHTML = '<h3>' + rows.length + ' events</h3><div class="bd flush" style="overflow-x:auto"><table class="tbl"><thead><tr><th>time</th><th>action</th><th>target</th><th>result</th><th>detail</th></tr></thead><tbody>' +
+    (rows.length ? rows.map((e2) => "<tr><td class=\"mono-dim\">" + new Date(e2.t).toLocaleTimeString() + "</td><td>" + esc(e2.action) + "</td><td>" + esc(e2.target) + '</td><td><span class="pill ' + auditTone(e2.result) + '">' + esc(e2.result) + "</span></td><td class=\"mono-dim\">" + esc(e2.detail) + "</td></tr>").join("")
+      : '<tr><td colspan="5"><div class="empty-state">Nothing recorded yet.</div></td></tr>') +
+    "</tbody></table></div>";
+  pg.appendChild(card);
+  $("audClear").addEventListener("click", () => { localStorage.removeItem(AUDIT_KEY); renderPage(); });
+};
+
+/* ── Settings ── */
+PAGES.settings = async (host) => {
+  const s = await getJSON("/settings");
+  const pg = pgShell(host, "Settings", "Live configuration of this serve process. Deeper config: .claw.json / ~/.claw/config.json.");
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = '<h3>Runtime</h3><div class="bd"><div class="mrow" style="border:0">' +
+    [["model", s.provider + " / " + s.model], ["endpoint", s.baseURL], ["workspace", s.workspace], ["mode", s.mode]].map(([k, v]) => '<div class="m" style="border:0;padding-left:0"><div class="k">' + k + '</div><div class="v" style="font-size:12px;word-break:break-all">' + esc(v) + "</div></div>").join("") +
+    "</div></div>";
+  pg.appendChild(card);
+  const card2 = document.createElement("div");
+  card2.className = "card";
+  card2.innerHTML = '<h3>Guards</h3><div class="bd"><div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:6px">shell allowlist (no prompt)</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">' +
+    (s.allowlist.length ? s.allowlist.map((a) => '<span class="pill">' + esc(a) + "</span>").join("") : '<span class="pill dim">none</span>') +
+    '</div><div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint);margin-bottom:6px">risky tools (human gate)</div><div style="display:flex;flex-wrap:wrap;gap:5px">' +
+    (s.riskyTools.length ? s.riskyTools.map((a) => '<span class="pill warn">' + esc(a) + "</span>").join("") : '<span class="pill dim">none</span>') + "</div></div>";
+  pg.appendChild(card2);
+};
+
+/* ── page-level action buttons (delegated) ── */
+$("pageView").addEventListener("click", (e2) => {
+  const g = e2.target.closest("[data-goto]");
+  if (g) return openPage(g.dataset.goto);
+  const a = e2.target.closest("[data-act]");
+  if (!a) return;
+  if (a.dataset.act === "new") { newSession(); openPage("run"); }
+  if (a.dataset.act === "palette") openPalette();
+  if (a.dataset.act === "copyAdd") { navigator.clipboard?.writeText("claw mcp add tinyfish --url https://agent.tinyfish.ai/mcp --trusted"); toast("add command copied"); }
+});
+
+/* ── command palette ── */
+let palSel = 0, palItems = [];
+function paletteCommands() {
+  return [
+    ...Object.entries(PAGE_TITLES).map(([p, t]) => ({ label: "Open " + t, kind: "page", run: () => openPage(p) })),
+    { label: "New blank session", kind: "action", run: () => { newSession(); openPage("run"); } },
+    { label: "Toggle console waterfall", kind: "action", run: () => $("console").classList.toggle("hidden") },
+    { label: "Mode: default (ask)", kind: "mode", run: () => setMode("default") },
+    { label: "Mode: plan (read-only)", kind: "mode", run: () => setMode("plan") },
+    { label: "Mode: acceptEdits", kind: "mode", run: () => setMode("acceptEdits") },
+    { label: "Mode: bypass", kind: "mode", run: () => setMode("bypass") },
+  ];
+}
+async function openPalette() {
+  $("palette").classList.add("open");
+  $("palInput").value = "";
+  palSel = 0;
+  await refreshPalette("");
+  $("palInput").focus();
+}
+function closePalette() { $("palette").classList.remove("open"); }
+async function refreshPalette(q) {
+  let cmds = paletteCommands();
+  try {
+    const j = await getJSON("/sessions");
+    cmds = cmds.concat((j.sessions || []).slice(0, 8).map((s) => ({ label: "Replay · " + (s.title || s.id), kind: "session", run: () => { openSession(s.id); openPage("run"); } })));
+  } catch { /* offline */ }
+  const ql = q.toLowerCase();
+  palItems = cmds.filter((c) => (c.label + " " + c.kind).toLowerCase().includes(ql));
+  palSel = Math.min(palSel, Math.max(0, palItems.length - 1));
+  const list = $("palList");
+  list.replaceChildren();
+  palItems.forEach((c, i) => {
+    const el = document.createElement("div");
+    el.className = "pal-item" + (i === palSel ? " sel" : "");
+    el.innerHTML = '<span class="pi-dot"></span><span class="pi-l">' + esc(c.label) + '</span><span class="pi-d">' + esc(c.kind) + "</span>";
+    el.addEventListener("click", () => { c.run(); closePalette(); });
+    el.addEventListener("mouseenter", () => { palSel = i; refreshPalette($("palInput").value); });
+    list.appendChild(el);
+  });
+  $("palCount").textContent = palItems.length + " results";
+}
+$("palBtn").addEventListener("click", openPalette);
+$("palInput").addEventListener("input", (e2) => { palSel = 0; refreshPalette(e2.target.value); });
+$("palInput").addEventListener("keydown", (e2) => {
+  if (e2.key === "ArrowDown") { e2.preventDefault(); palSel = Math.min(palSel + 1, palItems.length - 1); refreshPalette($("palInput").value); }
+  if (e2.key === "ArrowUp") { e2.preventDefault(); palSel = Math.max(palSel - 1, 0); refreshPalette($("palInput").value); }
+  if (e2.key === "Enter") { e2.preventDefault(); const c = palItems[palSel]; if (c) { c.run(); closePalette(); } }
+  if (e2.key === "Escape") closePalette();
+});
+$("palette").addEventListener("mousedown", (e2) => { if (e2.target === $("palette")) closePalette(); });
+window.addEventListener("keydown", (e2) => {
+  if ((e2.metaKey || e2.ctrlKey) && e2.key.toLowerCase() === "k") { e2.preventDefault(); $("palette").classList.contains("open") ? closePalette() : openPalette(); }
+  if (e2.key === "Escape" && $("palette").classList.contains("open")) closePalette();
+});
+
+/* ── boot page from hash ── */
+(function routeFromHash() {
+  const m = (location.hash || "").match(/^#\/(\w+)/);
+  const page = m && PAGE_TITLES[m[1]] ? m[1] : "run";
+  currentPage = page;
+  $("center").classList.toggle("page-mode", page !== "run");
+  document.querySelectorAll(".rail button").forEach((b) => b.classList.toggle("on", RAIL_PAGES[b.id] === page));
+  if (page !== "run") renderPage();
+})();
+setInterval(() => { if (currentPage === "overview" && !document.hidden) renderPage(); }, 4000);
+
 /* ── init ──────────────────────────────────────────────────── */
 (async function init() {
   emptyState();
   activePanel = null;
-  document.querySelectorAll(".rail button").forEach((b) => b.classList.remove("on"));
+  document.querySelectorAll(".rail button").forEach((b) => b.classList.toggle("on", RAIL_PAGES[b.id] === currentPage));
   $("work").classList.add("no-panel");
   try {
     const h = await (await fetch("/status")).json();

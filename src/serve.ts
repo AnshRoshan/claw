@@ -12,10 +12,10 @@
 // runs with -y.
 
 import * as http from "node:http";
-import type { ChatMsg } from "./types.ts";
+import type { ChatMsg, ToolCall } from "./types.ts";
 import { Agent } from "./agent.ts";
 import { SessionStore } from "./sessions.ts";
-import { green, dim, readFileOr, confine } from "./util.ts";
+import { green, dim, readFileOr, confine, newId } from "./util.ts";
 import { loadConfig, updateProjectConfig, updateUserConfig } from "./config.ts";
 import { buildModelProvider } from "./providers/factory.ts";
 import * as fs from "node:fs";
@@ -35,6 +35,11 @@ export interface ServeWorld {
     hooks: Record<string, boolean>;
     baseURL: string;
   };
+  /** Install a headless approval broker (the browser becomes the human gate). */
+  setApprovalBridge?: (fn: ((call: ToolCall, sessionKey: string) => Promise<boolean>) | null) => void;
+  /** Runtime model swap + introspection for the Models page. */
+  setModel?: (name: string) => { provider: string; model: string };
+  modelInfo?: () => { provider: string; model: string; aliases: string[]; defaultModel: string };
 }
 
 export interface ServeDeps {
@@ -74,6 +79,53 @@ export function makeServeServer(deps: ServeDeps): http.Server {
 
   const store = new SessionStore(deps.sessionsDir);
   const sessions = new Map<string, { id: string; history: ChatMsg[] }>();
+
+  /* ── operator approval broker ─────────────────────────────────────────
+   * In gated modes (default/plan/acceptEdits) a risky tool call blocks the
+   * turn and asks the BROWSER: the live SSE stream for that session receives
+   * an `approval` event; POST /approve resolves it. No live stream → deny
+   * (the old headless contract). Bypass mode never reaches the broker.     */
+  const APPROVAL_TIMEOUT_MS = 120_000;
+  const streamSends = new Map<string, (obj: Record<string, unknown>) => void>();
+  const approvals = new Map<string, {
+    resolve: (b: boolean) => void;
+    sessionKey: string;
+    name: string;
+    args: string;
+    t0: number;
+    send: (obj: Record<string, unknown>) => void;
+  }>();
+  const installBridge = () => {
+    world.setApprovalBridge?.(async (call: ToolCall, sessionKey: string) => {
+      const sid = sessionKey.startsWith("http:") ? sessionKey.slice(5) : "";
+      const send = streamSends.get(sid);
+      if (!send) return false; // no browser to ask — deny, like headless always did
+      const id = newId("appr");
+      return await new Promise<boolean>((resolve) => {
+        const settle = (b: boolean, why: "resolved" | "expired") => {
+          clearTimeout(timer);
+          approvals.delete(id);
+          try {
+            send({ type: "approval-resolved", id, approve: b, why });
+          } catch {
+            /* stream already gone */
+          }
+          resolve(b);
+        };
+        const timer = setTimeout(() => settle(false, "expired"), APPROVAL_TIMEOUT_MS);
+        approvals.set(id, {
+          resolve: (b) => settle(b, "resolved"),
+          sessionKey: sid,
+          name: call.function.name,
+          args: call.function.arguments,
+          t0: Date.now(),
+          send,
+        });
+        send({ type: "approval", id, session_id: sid, name: call.function.name, args: call.function.arguments, timeout_ms: APPROVAL_TIMEOUT_MS });
+      });
+    });
+  };
+  installBridge();
 
   const getSession = (requested: string | undefined): { id: string; history: ChatMsg[] } => {
     if (requested && sessions.has(requested)) return sessions.get(requested)!;
@@ -211,6 +263,7 @@ export function makeServeServer(deps: ServeDeps): http.Server {
         const send = (obj: unknown) => {
           if (!closed) res.write(`data: ${JSON.stringify(obj)}\n\n`);
         };
+        streamSends.set(session.id, send as (o: Record<string, unknown>) => void);
         try {
           let reasoningBuf = "";
           const outcome = await world.agent.runTurn(`http:${session.id}`, session.history, {
@@ -234,6 +287,9 @@ export function makeServeServer(deps: ServeDeps): http.Server {
           send({ type: "done", ...buildPayload(session.id, outcome, world.agent, before, after) });
         } catch (err) {
           send({ type: "error", error: (err as Error).message });
+        } finally {
+          streamSends.delete(session.id);
+          for (const [id, a] of approvals) if (a.sessionKey === session.id) { a.resolve(false); }
         }
         res.end();
         return;
@@ -263,6 +319,7 @@ export function makeServeServer(deps: ServeDeps): http.Server {
         mode: world.approveState?.mode ?? (world.approveState?.autoApprove ? "bypass" : "default"),
         configured: !world.setupRequired,
         sessions: sessions.size,
+        pending_approvals: approvals.size,
         mcp: [...mcpClients.entries()].map(([name, c]) => ({
           name,
           tools: c.tools.map((t) => t.name),
@@ -323,6 +380,74 @@ export function makeServeServer(deps: ServeDeps): http.Server {
           throw new Error("mode must be default | plan | acceptEdits | bypass");
         }
         json(res, 200, { mode: world.approveState.mode ?? "bypass" });
+      } catch (err) {
+        json(res, 400, { error: (err as Error).message });
+      }
+      return;
+    }
+    if (req.method === "GET" && url === "/approvals") {
+      json(res, 200, {
+        pending: [...approvals.entries()].map(([id, a]) => ({
+          id,
+          session_id: a.sessionKey,
+          name: a.name,
+          args: a.args,
+          waiting_ms: Date.now() - a.t0,
+        })),
+      });
+      return;
+    }
+    if (req.method === "POST" && url === "/approve") {
+      let body = "";
+      for await (const chunk of req) body += chunk;
+      try {
+        const { id, approve } = JSON.parse(body) as { id?: string; approve?: boolean };
+        const a = id ? approvals.get(id) : undefined;
+        if (!a) {
+          json(res, 404, { error: "no pending approval with that id (it may have expired)" });
+          return;
+        }
+        a.resolve(approve === true);
+        json(res, 200, { ok: true, id, approve: approve === true });
+      } catch (err) {
+        json(res, 400, { error: (err as Error).message });
+      }
+      return;
+    }
+    if (req.method === "GET" && url === "/memory") {
+      // The project memory file the agent obeys every session: CLAW.md.
+      const p = path.join(world.workspace, "CLAW.md");
+      json(res, 200, { path: "CLAW.md", exists: fs.existsSync(p), content: readFileOr(p) ?? "" });
+      return;
+    }
+    if (req.method === "POST" && url === "/memory") {
+      let body = "";
+      for await (const chunk of req) body += chunk;
+      try {
+        const { content } = JSON.parse(body) as { content?: unknown };
+        if (typeof content !== "string") throw new Error("body must be JSON: { content }");
+        const p = confine(world.workspace, "CLAW.md");
+        fs.writeFileSync(p, content.slice(0, 200_000), "utf8");
+        json(res, 200, { ok: true, bytes: content.length });
+      } catch (err) {
+        json(res, 400, { error: (err as Error).message });
+      }
+      return;
+    }
+    if (req.method === "GET" && url === "/models") {
+      const info = world.modelInfo?.() ?? { provider: world.agent.provider.name, model: world.agent.provider.model, aliases: [], defaultModel: world.agent.provider.model };
+      json(res, 200, info);
+      return;
+    }
+    if (req.method === "POST" && url === "/models") {
+      let body = "";
+      for await (const chunk of req) body += chunk;
+      try {
+        const { model } = JSON.parse(body) as { model?: string };
+        if (!model?.trim()) throw new Error("body must be JSON: { model }");
+        if (!world.setModel) throw new Error("model swap not wired — restart serve from the CLI");
+        const next = world.setModel(model.trim());
+        json(res, 200, { ok: true, ...next });
       } catch (err) {
         json(res, 400, { error: (err as Error).message });
       }
@@ -396,7 +521,7 @@ export function makeServeServer(deps: ServeDeps): http.Server {
           apiKey: apiKey?.trim() || "",
           model: model.trim(),
           providerType: preset.type,
-          autoApprove: true, // headless: the workbench operates without a TTY gate
+          autoApprove: false, // the browser is the gate now: gated modes push approvals to the workbench
         };
         updateUserConfig(patch);
         const merged = loadConfig();

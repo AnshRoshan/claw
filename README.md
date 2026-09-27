@@ -27,7 +27,7 @@ no npm dependencies at runtime.
 cd claw
 node src/cli.ts                     # interactive chat (falls back to a mock if no API key)
 node src/cli.ts -M "what is 7 * 6"  # force the offline scripted mock, one-shot
-node src/cli.ts selfcheck           # 79 built-in assertions (no network needed)
+node src/cli.ts selfcheck           # 80 built-in assertions (no network needed)
 ```
 
 To use a **real model**, set one of:
@@ -154,7 +154,7 @@ Press **Tab** to autocomplete slash commands (built-in + your custom `.claw/comm
 │  serve.ts    Channel plug — headless HTTP (POST /chat)     │
 │  sessions.ts JSONL persistence + prompt history            │
 │  cost.ts     token/cost ledger                             │
-│  selfcheck.ts 79 assertions incl. fake-server stream tests │
+│  selfcheck.ts 80 assertions incl. fake-server stream tests │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -409,25 +409,37 @@ curl -sN localhost:8787/chat -d '{"message":"hi","stream":true}'
 
 Same agent, same tools, same guard stack — one loop, many sessions.
 
-**The web workbench** (`GET /`) is the flagship surface, designed
-Apple-clean (refined dark, hairlines, one restrained accent) and built as
-an IDE, not a chat box:
+**The web workbench** (`GET /`) is the flagship surface: a zero-dependency
+**operator console** (Apple-clean dark, hairlines, one restrained accent)
+built as an IDE, not a chat box.
 
-- **Activity rail + panels** — sessions, workspace **file explorer**
-  (click a file to @-reference it), **skills & commands**, **connected MCP
-  servers** with their tools, and a **settings panel** (model, provider,
-  allowlist, risky tools, hooks, endpoint).
-- **Permission mode** is a segmented control in the title bar:
-  Default / Plan / Auto-edit / Bypass — it talks to the same gate the
-  terminal uses (`POST /mode`).
-- **Tool-trace timeline** — every tool call is a card (`running → ✓ 42ms`)
-  with args/result expanded on click, plus a collapsible **console pane**
-  (Timeline and Raw-events views) like an IDE's terminal.
-- **Composer** — `@` to reference workspace files (autocomplete from the
-  live file tree), `/` for custom commands, and a paperclip to **attach
-  files** (uploaded into `attachments/`, auto-referenced in the message).
-- Sessions dropdown in the title bar; every past conversation replays via
-  `/history`.
+- **Pages, not panels** — the activity rail routes a full console:
+  **Overview** (live metrics, run monitor, pending approvals, recent runs,
+  event feed, instruments with gauges + a turn-latency sparkline),
+  **Run** (the chat), **Sessions** (search + full replay), **Models**
+  (switch the live model/alias without a restart), **MCP** (connected
+  servers + their tools), **Memory** (edit `CLAW.md` in place), **Skills**
+  (custom commands), **Audit** (local operator log), **Settings** (live
+  guards view).
+- **⌘K command palette** — fuzzy search across pages, modes, and sessions;
+  ↑↓/↵ keyboard-driven. Toast notifications for every operator action.
+- **Real approvals, in the browser.** In gated modes (Default/Plan/Auto-edit)
+  a risky tool call **blocks the running turn** and streams an
+  `approval` event to the workbench: an Authorize/Deny card appears inline
+  (and on the Overview page + rail indicator). `POST /approve` resumes the
+  exact turn that paused; 120 s without a decision auto-denies. Bypass mode
+  skips the gate; the CLI keeps its TTY prompt. The browser *is* the human
+  gate — headless no longer means headless-denied.
+- **Permission mode** segmented control in the title bar (Default / Plan /
+  Auto-edit / Bypass) — mirrored, color-coded, in the status bar.
+- **DevTools-style activity inspector** in the console pane: a zoomable,
+  pannable **timeline chart** (user / thinking / model / tool-call / tool-run
+  on colored lanes over one time axis) plus a **waterfall** of every event —
+  each row expands to the full request args and result payload, and a **Log**
+  view keeps the raw line stream.
+- **Composer** — `@` file references (live tree autocomplete), `/` custom
+  commands, paperclip **file attachments**; `Enter` sends, `Shift+Enter`
+  newlines.
 
 Zero dependencies, one editable HTML file (`web/index.html`). The UI is a
 pure projection of the same event stream the terminal sees — DeepSeek
@@ -443,8 +455,9 @@ server **swaps the provider live** — no restart. Sessions get **titles**
 derived from their first message, shown everywhere instead of ids. All
 state lives under `~/.claw/` (override with `$CLAW_HOME`). Session histories persist to `~/.claw/sessions/`
 (visible to `claw continue`), and concurrent turns on one session are
-refused by the session lock. A serve process has no TTY, so **risky tools
-are denied by default** — run with `-y` only if you accept the consequences.
+refused by the session lock. Risky tools in gated modes route to the
+browser approval gate described above; with no browser listening (plain API
+use) they are denied — safe by default.
 
 ## Session summaries
 

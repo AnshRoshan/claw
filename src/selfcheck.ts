@@ -8,7 +8,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import type { AddressInfo } from "node:net";
-import type { ChatMsg, Provider, ProviderResult, Tool, Usage } from "./types.ts";
+import type { ChatMsg, Provider, ProviderResult, Tool, ToolCall, Usage } from "./types.ts";
 import { Agent } from "./agent.ts";
 import { RouterProvider } from "./providers/router.ts";
 import { Ledger } from "./cost.ts";
@@ -1625,6 +1625,135 @@ export async function runSelfCheck(): Promise<void> {
     if (!BUILTIN_SLASH.includes("usage") || !BUILTIN_SLASH.includes("allow")) fail("BUILTIN_SLASH must list the new commands");
     fs.rmSync(ws, { recursive: true, force: true });
     ok("REPL helpers: /export transcript, # memory notes, Tab completion, /usage estimate");
+  }
+
+  // ── serve operator approvals: the browser gate blocks and resumes the turn ──
+  {
+    const ws = fs.mkdtempSync(path.join(os.tmpdir(), "claw-appr-"));
+    const danger: Tool = {
+      name: "danger",
+      description: "test risky tool",
+      parameters: { type: "object", properties: {} },
+      risk: "risky",
+      cacheable: false,
+      execute: async () => "RAN",
+    };
+    const apprProvider: Provider = {
+      name: "scripted",
+      model: "sa",
+      streamable: false,
+      async chat(msgs) {
+        const last = msgs[msgs.length - 1];
+        if (last.role === "tool") return { content: "final: " + last.content, toolCalls: [], usage: null };
+        return { content: "", toolCalls: [call("danger", {})], usage: null };
+      },
+    };
+    let bridge: ((c: ToolCall, s: string) => Promise<boolean>) | null = null;
+    const apprAgent = new Agent(apprProvider, [danger], { maxIterations: 5, verbose: false, compactAt: 50, log: () => {}, onText: () => {} });
+    apprAgent.use(approvalGuard(["danger"], async (c, s) => (bridge ? bridge(c, s) : false), { autoApprove: false }));
+    const apprWorld = {
+      agent: apprAgent,
+      workspace: ws,
+      setupRequired: false,
+      approveState: { autoApprove: false },
+      setApprovalBridge: (fn: ((c: ToolCall, s: string) => Promise<boolean>) | null) => {
+        bridge = fn;
+      },
+      setModel: (m: string) => ({ provider: "sa", model: m }),
+      modelInfo: () => ({ provider: "sa", model: "sa", aliases: [], defaultModel: "sa" }),
+    };
+    const server = makeServeServer({ world: apprWorld, sessionsDir: path.join(ws, "sessions") });
+    await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
+    const port = (server.address() as AddressInfo).port;
+    const base = `http://127.0.0.1:${port}`;
+    const streamFrames = async function* (resp: Response): AsyncGenerator<Record<string, unknown>> {
+      const reader = resp.body!.getReader();
+      const dec = new TextDecoder();
+      let b = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) return;
+        b += dec.decode(value, { stream: true });
+        const parts = b.split("\n\n");
+        b = parts.pop() ?? "";
+        for (const p of parts) {
+          const line = p.split("\n").find((l) => l.startsWith("data:"));
+          if (line) {
+            try {
+              yield JSON.parse(line.slice(5)) as Record<string, unknown>;
+            } catch {
+              /* skip malformed frame */
+            }
+          }
+        }
+      }
+    };
+    try {
+      // APPROVE path: the turn blocks on the browser gate, then resumes.
+      const resp = await fetch(base + "/chat", { method: "POST", body: JSON.stringify({ message: "do it", stream: true }) });
+      const it = streamFrames(resp);
+      let appr: Record<string, unknown> | null = null;
+      for (;;) {
+        const { value, done } = await it.next();
+        if (done) break;
+        if (value.type === "approval") {
+          appr = value;
+          break;
+        }
+      }
+      if (!appr || appr.name !== "danger") fail("an approval event for `danger` should stream before execution");
+      const pend = (await (await fetch(base + "/approvals")).json()) as { pending: Array<{ id: string }> };
+      if (!pend.pending.some((p) => p.id === appr!.id)) fail("GET /approvals should list the pending request");
+      const doneP = (async () => {
+        for (;;) {
+          const { value, done } = await it.next();
+          if (done) return null;
+          if (value.type === "done") return value;
+        }
+      })();
+      const ap = (await (await fetch(base + "/approve", { method: "POST", body: JSON.stringify({ id: appr.id, approve: true }) })).json()) as { ok: boolean };
+      if (!ap.ok) fail("POST /approve should acknowledge");
+      const dj = await doneP;
+      if (!dj || !String(dj.answer).includes("RAN")) fail(`approved turn must execute the tool, got ${JSON.stringify(dj)}`);
+
+      // DENY path: same gate, refused → the tool never runs.
+      const resp2 = await fetch(base + "/chat", { method: "POST", body: JSON.stringify({ message: "again", session_id: String(appr!.session_id), stream: true }) });
+      const it2 = streamFrames(resp2);
+      let appr2: Record<string, unknown> | null = null;
+      for (;;) {
+        const { value, done } = await it2.next();
+        if (done) break;
+        if (value.type === "approval") {
+          appr2 = value;
+          break;
+        }
+      }
+      if (!appr2) fail("second turn should also gate the risky tool");
+      const done2 = (async () => {
+        for (;;) {
+          const { value, done } = await it2.next();
+          if (done) return null;
+          if (value.type === "done") return value;
+        }
+      })();
+      await fetch(base + "/approve", { method: "POST", body: JSON.stringify({ id: appr2!.id, approve: false }) });
+      const d2 = await done2;
+      if (!d2 || !String(d2.answer).includes("denied")) fail(`denied turn must report the refusal, got ${JSON.stringify(d2)}`);
+
+      // Memory + models endpoints.
+      const mem = (await (await fetch(base + "/memory")).json()) as { exists: boolean };
+      if (mem.exists !== false) fail("fresh workspace should have no CLAW.md");
+      const saved = (await (await fetch(base + "/memory", { method: "POST", body: JSON.stringify({ content: "# rules\nbe nice\n" }) })).json()) as { ok: boolean };
+      if (!saved.ok || !fs.readFileSync(path.join(ws, "CLAW.md"), "utf8").includes("be nice")) fail("POST /memory must write CLAW.md");
+      const models = (await (await fetch(base + "/models")).json()) as { model: string };
+      if (models.model !== "sa") fail("GET /models must report the active model");
+      const swapped = (await (await fetch(base + "/models", { method: "POST", body: JSON.stringify({ model: "alias/x" }) })).json()) as { model: string };
+      if (swapped.model !== "alias/x") fail("POST /models must swap the model");
+      ok("serve approvals: browser gate blocks/resumes the turn, deny path, /memory + /models endpoints");
+    } finally {
+      server.close();
+      fs.rmSync(ws, { recursive: true, force: true });
+    }
   }
 
   console.log("\nOK — all checks passed.");

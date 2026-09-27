@@ -126,7 +126,7 @@ export const EDITING_TOOLS = ["write_file", "edit_file", "mkdir", "move_file"];
  *  (bypassPermissions is autoApprove=true and is checked first) */
 export function approvalGuard(
   riskyTools: string[],
-  ask: (call: ToolCall) => Promise<boolean>,
+  ask: (call: ToolCall, sessionKey: string) => Promise<boolean>,
   approveState: { autoApprove: boolean; dryRun?: boolean; mode?: "default" | "plan" | "acceptEdits" },
   shellAllowlist: string[] = [],
 ): Guard {
@@ -161,7 +161,7 @@ export function approvalGuard(
         const args = ctx.args ?? parseJsonArgs(ctx.call?.function.arguments ?? "{}");
         if (matchesAllowlist(String(args.cmd ?? ""), shellAllowlist)) return { action: "continue" };
       }
-      const ok = await ask(ctx.call!);
+      const ok = await ask(ctx.call!, ctx.sessionKey);
       if (!ok) {
         return { action: "deny", message: `user denied ${name} — explain what you were going to do and adapt` };
       }
@@ -337,7 +337,7 @@ export function userHooksGuard(cfg: { workspace: string; hooks: HookCommands }):
 /** Convenience: the default guard stack, in the cheapest-first order. */
 export function defaultGuards(
   cfg: { workspace: string; shellAllowlist: string[]; riskyTools: string[]; outputCap: number; hooks?: HookCommands },
-  ask: (call: ToolCall) => Promise<boolean>,
+  ask: (call: ToolCall, sessionKey: string) => Promise<boolean>,
   approveState: { autoApprove: boolean; dryRun?: boolean; mode?: "default" | "plan" | "acceptEdits" },
 ): Guard[] {
   return [
